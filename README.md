@@ -37,6 +37,10 @@ The tool is mainly configured through environment variables. These are:
 - DOCKER_REGISTRIES (optional): Comma-separated list of registry URL. 
   If none is provided, the default URL returned from AWS is used.
   - Example: `DOCKER_REGISTRIES=https://321321.dkr.ecr.us-west-2.amazonaws.com,https://123123.dkr.ecr.us-east-2.amazonaws.com`
+- ANNOTATIONS (optional): Comma-separated list of annotations to add to the secret where the Docker credentials are stored, with each annotation having the form `key=value`.
+  - Example: `ANNOTATIONS=test.com/repository=foobar,loadbalancer=test`
+- LABELS (optional): Comma-separated list of labels to add to the secret where the Docker credentials are stored, with each label having the form `key=value`.
+  - Example: `LABELS=test.com/repository=foobar,loadbalancer=test`
 
 ## Running the Example
 

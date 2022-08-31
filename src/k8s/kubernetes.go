@@ -89,7 +89,7 @@ func createSecret(name string) *coreV1.Secret {
 	return &secret
 }
 
-func UpdatePassword(namespace, name, username, password string, servers []string) error {
+func UpdatePassword(namespace, name, username, password string, servers []string, annotations, labels map[string]string) error {
 	client, err := GetClient()
 	if nil != err {
 		return err
@@ -113,6 +113,9 @@ func UpdatePassword(namespace, name, username, password string, servers []string
 	}
 
 	secret.Data[coreV1.DockerConfigJsonKey] = configJson
+	secret.Annotations = annotations
+	secret.Labels = labels
+
 	_, err = client.CoreV1().Secrets(namespace).Update(context.TODO(), secret, metaV1.UpdateOptions{})
 
 	if err == nil {
@@ -126,6 +129,8 @@ func UpdatePassword(namespace, name, username, password string, servers []string
 	}
 
 	secret = createSecret(name)
+	secret.Annotations = annotations
+	secret.Labels = labels
 	secret.Data[coreV1.DockerConfigJsonKey] = configJson
 	_, err = client.CoreV1().Secrets(namespace).Create(context.TODO(), secret, metaV1.CreateOptions{})
 	return err

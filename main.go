@@ -14,6 +14,8 @@ const (
 	envVarAwsSecret       = "DOCKER_SECRET_NAME"
 	envVarTargetNamespace = "TARGET_NAMESPACE"
 	envVarRegistries      = "DOCKER_REGISTRIES"
+	envVarAnnotations     = "ANNOTATIONS"
+	envVarLabels          = "LABELS"
 )
 
 func checkErr(err error) {
@@ -30,6 +32,12 @@ func main() {
 		panic(fmt.Sprintf("Environment variable %s is required", envVarAwsSecret))
 	}
 
+	annotationsString := os.Getenv(envVarAnnotations)
+	annotations := stringToMap(annotationsString)
+
+	labelsString := os.Getenv(envVarLabels)
+	labels := stringToMap(labelsString)
+
 	fmt.Print("Fetching auth data from AWS... ")
 	credentials, err := aws.GetDockerCredentials()
 	checkErr(err)
@@ -45,7 +53,7 @@ func main() {
 	failed := false
 	for _, ns := range namespaces {
 		fmt.Printf("Updating secret in namespace [%s]... ", ns)
-		err = k8s.UpdatePassword(ns, name, credentials.Username, credentials.Password, servers)
+		err = k8s.UpdatePassword(ns, name, credentials.Username, credentials.Password, servers, annotations, labels)
 		if nil != err {
 			fmt.Printf("failed: %s\n", err)
 			failed = true
@@ -69,4 +77,14 @@ func getServerList(defaultServer string) []string {
 	}
 
 	return strings.Split(addedServersSetting, ",")
+}
+
+func stringToMap(str string) map[string]string {
+	m := map[string]string{}
+	for _, item := range strings.Split(str, ",") {
+		itemSlice := strings.Split(item, "=")
+		m[itemSlice[0]] = itemSlice[1]
+	}
+
+	return m
 }
