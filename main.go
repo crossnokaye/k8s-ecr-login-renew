@@ -32,11 +32,19 @@ func main() {
 		panic(fmt.Sprintf("Environment variable %s is required", envVarAwsSecret))
 	}
 
-	annotationsString := os.Getenv(envVarAnnotations)
+	annotationsString, ok := os.LookupEnv(envVarAnnotations)
+	if !ok {
+		annotationsString = ""
+	}
 	annotations := stringToMap(annotationsString)
+	fmt.Printf("Annotations to appy: %+v\n", annotations)
 
-	labelsString := os.Getenv(envVarLabels)
+	labelsString, ok := os.LookupEnv(envVarLabels)
+	if !ok {
+		labelsString = ""
+	}
 	labels := stringToMap(labelsString)
+	fmt.Printf("Labels to appy: %+v\n", labels)
 
 	fmt.Print("Fetching auth data from AWS... ")
 	credentials, err := aws.GetDockerCredentials()
@@ -81,6 +89,10 @@ func getServerList(defaultServer string) []string {
 
 func stringToMap(str string) map[string]string {
 	m := map[string]string{}
+	if len(str) == 0 {
+		return m
+	}
+
 	for _, item := range strings.Split(str, ",") {
 		itemSlice := strings.Split(item, "=")
 		m[itemSlice[0]] = itemSlice[1]
