@@ -4,14 +4,15 @@ import (
 	"context"
 	"encoding/base64"
 	"encoding/json"
+	"os/user"
+	"path/filepath"
+	"strings"
+
 	coreV1 "k8s.io/api/core/v1"
 	metaV1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
-	"os/user"
-	"path/filepath"
-	"strings"
 )
 
 type config struct {
@@ -110,6 +111,10 @@ func UpdatePassword(namespace, name, username, password string, servers []string
 		secret.Data[coreV1.DockerConfigJsonKey] = configJson
 		_, err = client.CoreV1().Secrets(namespace).Create(context.TODO(), secret, metaV1.CreateOptions{})
 		return err
+	}
+
+	if secret.Data == nil {
+		secret.Data = map[string][]byte{}
 	}
 
 	secret.Data[coreV1.DockerConfigJsonKey] = configJson
