@@ -97,7 +97,7 @@ func stringToMap(str string) map[string]string {
 	for _, item := range strings.Split(str, ",") {
 		itemSlice := strings.Split(item, "=")
 		value := ""
-		if len(itemSlice) == 0 {
+		if len(itemSlice) == 1 {
 			value = ""
 		} else {
 			value = itemSlice[1]
