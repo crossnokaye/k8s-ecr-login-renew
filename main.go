@@ -3,11 +3,12 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/nabsul/k8s-ecr-login-renew/src/aws"
-	"github.com/nabsul/k8s-ecr-login-renew/src/k8s"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/nabsul/k8s-ecr-login-renew/src/aws"
+	"github.com/nabsul/k8s-ecr-login-renew/src/k8s"
 )
 
 const (
@@ -95,7 +96,13 @@ func stringToMap(str string) map[string]string {
 
 	for _, item := range strings.Split(str, ",") {
 		itemSlice := strings.Split(item, "=")
-		m[itemSlice[0]] = itemSlice[1]
+		value := ""
+		if len(itemSlice) == 0 {
+			value = ""
+		} else {
+			value = itemSlice[1]
+		}
+		m[itemSlice[0]] = value
 	}
 
 	return m
