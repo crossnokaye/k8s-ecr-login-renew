@@ -109,6 +109,7 @@ func UpdatePassword(namespace, name, username, password string, servers []string
 	if secret == nil {
 		secret = createSecret(name)
 		secret.Data[coreV1.DockerConfigJsonKey] = configJson
+		secret.Annotations = annotations
 		_, err = client.CoreV1().Secrets(namespace).Create(context.TODO(), secret, metaV1.CreateOptions{})
 		return err
 	}
